@@ -1,4 +1,3 @@
-#+title: Emerson's neovim config readme
 #+author: Emerson
 #+email: emersonfb99@gmail.com
 
