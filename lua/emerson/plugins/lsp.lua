@@ -3,9 +3,6 @@ return {
     'neovim/nvim-lspconfig',
     event = { 'BufReadPost', 'BufWritePost', 'BufNewFile' },
     dependencies = {
-      { 'williamboman/mason.nvim', lazy = true, opts = {} },
-      'williamboman/mason-lspconfig.nvim',
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
       'hrsh7th/cmp-nvim-lsp',
       {
         'j-hui/fidget.nvim',
@@ -57,63 +54,65 @@ return {
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-      -- Ensure the servers above are ready to use
-      require('mason').setup()
-
       -- Lsps
       local servers = require 'emerson.plugins.tools.servers'
 
       -- Installing more tools with Mason
-      local tools_to_install = vim.tbl_keys(servers)
-      vim.list_extend(tools_to_install, require 'emerson.plugins.tools.linters')
-      vim.list_extend(tools_to_install, require 'emerson.plugins.tools.formatters')
-      vim.list_extend(tools_to_install, require 'emerson.plugins.tools.daps')
-      require('mason-tool-installer').setup {
-        ensure_installed = tools_to_install,
-      }
+      -- local tools_to_install = vim.tbl_keys(servers)
+      -- vim.list_extend(tools_to_install, require 'emerson.plugins.tools.linters')
+      -- vim.list_extend(tools_to_install, require 'emerson.plugins.tools.formatters')
+      -- vim.list_extend(tools_to_install, require 'emerson.plugins.tools.daps')
+      -- require('mason-tool-installer').setup {
+      --   ensure_installed = tools_to_install,
+      -- }
 
       local lspconfig = require 'lspconfig'
-      require('mason-lspconfig').setup {
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            lspconfig[server_name].setup(server)
-          end,
+      -- require('mason-lspconfig').setup {
+      --   handlers = {
+      --     function(server_name)
+      --       local server = servers[server_name] or {}
+      --       server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+      --       lspconfig[server_name].setup(server)
+      --     end,
+      --
+      --     ['ts_ls'] = function() end, -- preventing duplicated server along with typescript-tools plugin
+      --
+      --     ['gopls'] = function()
+      --       local gopls = lspconfig['gopls']
+      --
+      --       gopls.setup {
+      --         settings = servers.gopls.settings,
+      --         capabilities = vim.tbl_deep_extend('force', {}, capabilities, gopls.capabilities or {}),
+      --         on_attach = function(client, _)
+      --           if not client.server_capabilities.semanticTokensProvider then
+      --             local semantic = client.config.capabilities.textDocument.semanticTokens
+      --             client.server_capabilities.semanticTokensProvider = {
+      --               full = true,
+      --               legend = {
+      --                 tokenTypes = semantic.tokenTypes,
+      --                 tokenModifiers = semantic.tokenModifiers,
+      --               },
+      --               range = true,
+      --             }
+      --           end
+      --         end,
+      --       }
+      --     end,
+      --
+      --     ['omnisharp'] = function()
+      --       local omnisharp = lspconfig['omnisharp']
+      --
+      --       omnisharp.setup {
+      --         cmd = { 'dotnet', '/home/emerson/.local/share/nvim/mason/packages/omnisharp/libexec/OmniSharp.dll' },
+      --       }
+      --     end,
+      --   },
+      -- }
 
-          ['ts_ls'] = function() end, -- preventing duplicated server along with typescript-tools plugin
-
-          ['gopls'] = function()
-            local gopls = lspconfig['gopls']
-
-            gopls.setup {
-              settings = servers.gopls.settings,
-              capabilities = vim.tbl_deep_extend('force', {}, capabilities, gopls.capabilities or {}),
-              on_attach = function(client, _)
-                if not client.server_capabilities.semanticTokensProvider then
-                  local semantic = client.config.capabilities.textDocument.semanticTokens
-                  client.server_capabilities.semanticTokensProvider = {
-                    full = true,
-                    legend = {
-                      tokenTypes = semantic.tokenTypes,
-                      tokenModifiers = semantic.tokenModifiers,
-                    },
-                    range = true,
-                  }
-                end
-              end,
-            }
-          end,
-
-          ['omnisharp'] = function()
-            local omnisharp = lspconfig['omnisharp']
-
-            omnisharp.setup {
-              cmd = { 'dotnet', '/home/emerson/.local/share/nvim/mason/packages/omnisharp/libexec/OmniSharp.dll' },
-            }
-          end,
-        },
-      }
+      for server, opts in pairs(servers) do
+        opts.capabilities = vim.tbl_deep_extend('force', {}, capabilities, opts.capabilities or {})
+        lspconfig[server].setup(opts)
+      end
     end,
   },
 }

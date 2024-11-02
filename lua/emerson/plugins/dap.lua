@@ -106,99 +106,99 @@ return {
     local filetype = vim.api.nvim_get_option_value('filetype', {})
     if filetype == 'javascript' or filetype == 'typescript' then
       -- js/ts hell
-      local function get_js_debug()
-        local install_path = require('mason-registry').get_package('js-debug-adapter'):get_install_path()
-        return install_path .. '/js-debug/src/dapDebugServer.js'
-      end
-      dap.adapters['pwa-node'] = {
-        type = 'server',
-        host = 'localhost',
-        port = '${port}',
-        executable = {
-          command = 'node',
-          args = {
-            get_js_debug(),
-            '${port}',
-          },
-        },
-      }
-      dap.configurations.javascript = {
-        {
-          type = 'pwa-node',
-          request = 'launch',
-          name = 'Launch file',
-          program = '${file}',
-          cwd = '${workspaceFolder}',
-        },
-        {
-          type = 'pwa-node',
-          request = 'launch',
-          name = 'Launch mocha test',
-          program = '${workspaceFolder}',
-          runtimeExecutable = 'node',
-          runtimeArgs = {
-            './node_modules/mocha/bin/mocha',
-          },
-          cwd = '${workspaceFolder}',
-        },
-      }
-      dap.configurations.typescript = {
-        {
-          type = 'pwa-node',
-          request = 'launch',
-          name = 'Launch file with ts-node',
-          sourceMaps = true,
-          resolveSourceMapLocations = {
-            '${workspaceFolder}/**',
-            '!**/node_modules/**',
-          },
-          protocol = 'inspector',
-          runtimeExecutable = 'node',
-          runtimeArgs = {
-            '-r',
-            'ts-node/register',
-          },
-          program = '${workspaceFolder}/src/server.ts',
-          cwd = '${workspaceFolder}',
-        },
-        {
-          type = 'pwa-node',
-          request = 'launch',
-          name = 'Launch mocha test with ts-node',
-          sourceMaps = true,
-          resolveSourceMapLocations = {
-            '${workspaceFolder}/**',
-            '!**/node_modules/**',
-          },
-          protocol = 'inspector',
-          runtimeExecutable = 'node',
-          runtimeArgs = {
-            '-r',
-            'ts-node/register',
-            './node_modules/mocha/bin/mocha',
-          },
-          program = '${workspaceFolder}/src/tests/matches.integration.test.ts',
-          cwd = '${workspaceFolder}',
-        },
-        {
-          type = 'pwa-node',
-          request = 'launch',
-          name = 'Launch jest test with ts-jest',
-          sourceMaps = true,
-          resolveSourceMapLocations = {
-            '${workspaceFolder}/**',
-            '!**/node_modules/**',
-          },
-          protocol = 'inspector',
-          runtimeExecutable = 'node',
-          runtimeArgs = {
-            '-r',
-            'ts-jest',
-            './node_modules/jest/bin/jest.js',
-          },
-          cwd = '${workspaceFolder}',
-        },
-      }
+      -- local function get_js_debug()
+      --   local install_path = require('mason-registry').get_package('js-debug-adapter'):get_install_path()
+      --   return install_path .. '/js-debug/src/dapDebugServer.js'
+      -- end
+      -- dap.adapters['pwa-node'] = {
+      --   type = 'server',
+      --   host = 'localhost',
+      --   port = '${port}',
+      --   executable = {
+      --     command = 'node',
+      --     args = {
+      --       get_js_debug(),
+      --       '${port}',
+      --     },
+      --   },
+      -- }
+      -- dap.configurations.javascript = {
+      --   {
+      --     type = 'pwa-node',
+      --     request = 'launch',
+      --     name = 'Launch file',
+      --     program = '${file}',
+      --     cwd = '${workspaceFolder}',
+      --   },
+      --   {
+      --     type = 'pwa-node',
+      --     request = 'launch',
+      --     name = 'Launch mocha test',
+      --     program = '${workspaceFolder}',
+      --     runtimeExecutable = 'node',
+      --     runtimeArgs = {
+      --       './node_modules/mocha/bin/mocha',
+      --     },
+      --     cwd = '${workspaceFolder}',
+      --   },
+      -- }
+      -- dap.configurations.typescript = {
+      --   {
+      --     type = 'pwa-node',
+      --     request = 'launch',
+      --     name = 'Launch file with ts-node',
+      --     sourceMaps = true,
+      --     resolveSourceMapLocations = {
+      --       '${workspaceFolder}/**',
+      --       '!**/node_modules/**',
+      --     },
+      --     protocol = 'inspector',
+      --     runtimeExecutable = 'node',
+      --     runtimeArgs = {
+      --       '-r',
+      --       'ts-node/register',
+      --     },
+      --     program = '${workspaceFolder}/src/server.ts',
+      --     cwd = '${workspaceFolder}',
+      --   },
+      --   {
+      --     type = 'pwa-node',
+      --     request = 'launch',
+      --     name = 'Launch mocha test with ts-node',
+      --     sourceMaps = true,
+      --     resolveSourceMapLocations = {
+      --       '${workspaceFolder}/**',
+      --       '!**/node_modules/**',
+      --     },
+      --     protocol = 'inspector',
+      --     runtimeExecutable = 'node',
+      --     runtimeArgs = {
+      --       '-r',
+      --       'ts-node/register',
+      --       './node_modules/mocha/bin/mocha',
+      --     },
+      --     program = '${workspaceFolder}/src/tests/matches.integration.test.ts',
+      --     cwd = '${workspaceFolder}',
+      --   },
+      --   {
+      --     type = 'pwa-node',
+      --     request = 'launch',
+      --     name = 'Launch jest test with ts-jest',
+      --     sourceMaps = true,
+      --     resolveSourceMapLocations = {
+      --       '${workspaceFolder}/**',
+      --       '!**/node_modules/**',
+      --     },
+      --     protocol = 'inspector',
+      --     runtimeExecutable = 'node',
+      --     runtimeArgs = {
+      --       '-r',
+      --       'ts-jest',
+      --       './node_modules/jest/bin/jest.js',
+      --     },
+      --     cwd = '${workspaceFolder}',
+      --   },
+      -- }
     elseif filetype == 'go' then
       require('dap-go').setup()
     end
