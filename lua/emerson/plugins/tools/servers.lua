@@ -93,4 +93,22 @@ return {
       },
     },
   },
+  nixd = {
+    settings = {
+      nixpkgs = {
+        expr = 'import <nixpkgs> { }',
+      },
+      formatting = {
+        command = { 'nixfmt' },
+      },
+      options = {
+        nixos = {
+          expr = '(builtins.getFlake \"/home/emerson/.dotfiles/\").nixosConfigurations.nixos.options',
+        },
+        home_manager = {
+          expr = '(builtins.getFlake \"/home/emerson/.dotfiles/\").homeConfigurations.emerson.options',
+        },
+      },
+    },
+  },
 }
