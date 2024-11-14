@@ -6,10 +6,10 @@ return {
 
     lint.linters_by_ft = {
       go = { 'golangcilint' },
-      javascript = { 'eslint_d', 'biomejs' },
-      typescript = { 'eslint_d', 'biomejs' },
-      javascriptreact = { 'eslint_d', 'biomejs' },
-      typescriptreact = { 'eslint_d', 'biomejs' },
+      javascript = { 'eslint', 'biomejs' },
+      typescript = { 'eslint', 'biomejs' },
+      javascriptreact = { 'eslint', 'biomejs' },
+      typescriptreact = { 'eslint', 'biomejs' },
       proto = { 'buf_lint' },
     }
 
