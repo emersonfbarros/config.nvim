@@ -40,7 +40,6 @@ return {
           map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-
           if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
             map('<leader>ch', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled {})
@@ -50,64 +49,13 @@ return {
         vim.diagnostic.config { virtual_text = false },
       })
 
+      -- Lsps
+      local servers = require 'emerson.servers'
+      local lspconfig = require 'lspconfig'
+
       -- Extending lsp capabilites
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
-
-      -- Lsps
-      local servers = require 'emerson.plugins.tools.servers'
-
-      -- Installing more tools with Mason
-      -- local tools_to_install = vim.tbl_keys(servers)
-      -- vim.list_extend(tools_to_install, require 'emerson.plugins.tools.linters')
-      -- vim.list_extend(tools_to_install, require 'emerson.plugins.tools.formatters')
-      -- vim.list_extend(tools_to_install, require 'emerson.plugins.tools.daps')
-      -- require('mason-tool-installer').setup {
-      --   ensure_installed = tools_to_install,
-      -- }
-
-      local lspconfig = require 'lspconfig'
-      -- require('mason-lspconfig').setup {
-      --   handlers = {
-      --     function(server_name)
-      --       local server = servers[server_name] or {}
-      --       server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-      --       lspconfig[server_name].setup(server)
-      --     end,
-      --
-      --     ['ts_ls'] = function() end, -- preventing duplicated server along with typescript-tools plugin
-      --
-      --     ['gopls'] = function()
-      --       local gopls = lspconfig['gopls']
-      --
-      --       gopls.setup {
-      --         settings = servers.gopls.settings,
-      --         capabilities = vim.tbl_deep_extend('force', {}, capabilities, gopls.capabilities or {}),
-      --         on_attach = function(client, _)
-      --           if not client.server_capabilities.semanticTokensProvider then
-      --             local semantic = client.config.capabilities.textDocument.semanticTokens
-      --             client.server_capabilities.semanticTokensProvider = {
-      --               full = true,
-      --               legend = {
-      --                 tokenTypes = semantic.tokenTypes,
-      --                 tokenModifiers = semantic.tokenModifiers,
-      --               },
-      --               range = true,
-      --             }
-      --           end
-      --         end,
-      --       }
-      --     end,
-      --
-      --     ['omnisharp'] = function()
-      --       local omnisharp = lspconfig['omnisharp']
-      --
-      --       omnisharp.setup {
-      --         cmd = { 'dotnet', '/home/emerson/.local/share/nvim/mason/packages/omnisharp/libexec/OmniSharp.dll' },
-      --       }
-      --     end,
-      --   },
-      -- }
 
       for server, opts in pairs(servers) do
         opts.capabilities = vim.tbl_deep_extend('force', {}, capabilities, opts.capabilities or {})
