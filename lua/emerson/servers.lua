@@ -133,10 +133,10 @@ return {
       },
       options = {
         nixos = {
-          expr = '(builtins.getFlake "/home/emerson/.dotfiles/").nixosConfigurations.nixos.options',
+          expr = '(builtins.getFlake \"/home/emerson/.dotfiles/\").nixosConfigurations.nixos.options',
         },
         home_manager = {
-          expr = '(builtins.getFlake "/home/emerson/.dotfiles/").homeConfigurations.emerson.options',
+          expr = '(builtins.getFlake \"/home/emerson/.dotfiles/\").homeConfigurations.emerson.options',
         },
       },
     },
