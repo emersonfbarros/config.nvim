@@ -1,19 +1,19 @@
 return {
   {
     'CopilotC-Nvim/CopilotChat.nvim',
-    version = 'v2.6.1',
+    branch = 'canary',
     dependencies = {
       { 'zbirenbaum/copilot.lua' }, -- or github/copilot.vim
       { 'nvim-lua/plenary.nvim' }, -- for curl, log wrapper
       { 'nvim-telescope/telescope.nvim' },
     },
+    build = 'make tiktoken',
     opts = {
-      debug = true, -- Enable debugging
       question_header = '## User ',
       answer_header = '## Copilot ',
       error_header = '## Error ',
-      separator = ' ', -- Separator to use in chat
       prompts = {
+        -- Code related prompts
         Explain = 'Please explain how the following code works.',
         Review = 'Please review the following code and provide suggestions for improvement.',
         Tests = 'Please explain how the selected code works, then generate unit tests for it.',
@@ -31,7 +31,6 @@ return {
         Concise = 'Please rewrite the following text to make it more concise.',
       },
       auto_follow_cursor = false, -- Don't follow the cursor after getting response
-      show_help = false, -- Show help in virtual text, set to true if that's 1st time using Copilot Chat
       mappings = {
         -- Use tab for completion
         complete = {
@@ -45,8 +44,8 @@ return {
         },
         -- Reset the chat buffer
         reset = {
-          normal = '<C-l>',
-          insert = '<C-l>',
+          normal = '<C-x>',
+          insert = '<C-x>',
         },
         -- Submit the prompt to Copilot
         submit_prompt = {
@@ -74,6 +73,10 @@ return {
         show_user_selection = {
           normal = 'gms',
         },
+        -- Show help
+        show_help = {
+          normal = 'gmh',
+        },
       },
     },
     config = function(_, opts)
@@ -81,18 +84,6 @@ return {
       local select = require 'CopilotChat.select'
       -- Use unnamed register for the selection
       opts.selection = select.unnamed
-
-      -- Override the git prompts message
-      opts.prompts.Commit = {
-        prompt = 'Write commit message for the change with commitizen convention',
-        selection = select.gitdiff,
-      }
-      opts.prompts.CommitStaged = {
-        prompt = 'Write commit message for the change with commitizen convention',
-        selection = function(source)
-          return select.gitdiff(source, true)
-        end,
-      }
 
       chat.setup(opts)
 
@@ -136,18 +127,9 @@ return {
     end,
     cmd = 'CopilotChat',
     keys = {
-      -- Show help actions with telescope
-      {
-        '<leader>cch',
-        function()
-          local actions = require 'CopilotChat.actions'
-          require('CopilotChat.integrations.telescope').pick(actions.help_actions())
-        end,
-        desc = 'CopilotChat - Help actions',
-      },
       -- Show prompts actions with telescope
       {
-        '<leader>ccp',
+        '<leader>cca',
         function()
           local actions = require 'CopilotChat.actions'
           require('CopilotChat.integrations.telescope').pick(actions.prompt_actions())
@@ -155,8 +137,12 @@ return {
         desc = 'CopilotChat - Prompt actions',
       },
       {
-        '<leader>ccp',
-        ":lua require('CopilotChat.integrations.telescope').pick(require('CopilotChat.actions').prompt_actions({selection = require('CopilotChat.select').visual}))<CR>",
+        '<leader>cca',
+        function()
+          require('CopilotChat.integrations.telescope').pick(
+            require('CopilotChat.actions').prompt_actions { selection = require('CopilotChat.select').visual }
+          )
+        end,
         mode = 'x',
         desc = 'CopilotChat - Prompt actions',
       },
@@ -196,11 +182,6 @@ return {
         '<cmd>CopilotChatCommit<cr>',
         desc = 'CopilotChat - Generate commit message for all changes',
       },
-      {
-        '<leader>ccM',
-        '<cmd>CopilotChatCommitStaged<cr>',
-        desc = 'CopilotChat - Generate commit message for staged changes',
-      },
       -- Quick chat with Copilot
       {
         '<leader>ccq',
@@ -220,6 +201,8 @@ return {
       { '<leader>ccl', '<cmd>CopilotChatReset<cr>', desc = 'CopilotChat - Clear buffer and chat history' },
       -- Toggle Copilot Chat Vsplit
       { '<leader>ccv', '<cmd>CopilotChatToggle<cr>', desc = 'CopilotChat - Toggle' },
+      -- Copilot Chat Models
+      { '<leader>cc?', '<cmd>CopilotChatModels<cr>', desc = 'CopilotChat - Select Models' },
     },
   },
 }
