@@ -102,46 +102,41 @@ return {
       ui.close()
     end
 
-    -- vim.api.nvim_get_option_value('filetype')
-    local filetype = vim.api.nvim_get_option_value('filetype', {})
-    if filetype == 'javascript' or filetype == 'typescript' then
-      -- js/ts hell
-      -- local function get_js_debug()
-      --   local install_path = require('mason-registry').get_package('js-debug-adapter'):get_install_path()
-      --   return install_path .. '/js-debug/src/dapDebugServer.js'
-      -- end
-      -- dap.adapters['pwa-node'] = {
-      --   type = 'server',
-      --   host = 'localhost',
-      --   port = '${port}',
-      --   executable = {
-      --     command = 'node',
-      --     args = {
-      --       get_js_debug(),
-      --       '${port}',
-      --     },
-      --   },
-      -- }
-      -- dap.configurations.javascript = {
-      --   {
-      --     type = 'pwa-node',
-      --     request = 'launch',
-      --     name = 'Launch file',
-      --     program = '${file}',
-      --     cwd = '${workspaceFolder}',
-      --   },
-      --   {
-      --     type = 'pwa-node',
-      --     request = 'launch',
-      --     name = 'Launch mocha test',
-      --     program = '${workspaceFolder}',
-      --     runtimeExecutable = 'node',
-      --     runtimeArgs = {
-      --       './node_modules/mocha/bin/mocha',
-      --     },
-      --     cwd = '${workspaceFolder}',
-      --   },
-      -- }
+    local filetype = vim.bo.filetype
+    if filetype == 'go' then
+      require('dap-go').setup()
+    elseif filetype == 'javascript' or filetype == 'typescript' then
+      dap.adapters['pwa-node'] = {
+        type = 'server',
+        host = 'localhost',
+        port = '${port}',
+        executable = {
+          command = 'js-debug', --NixOS puts it in the system path
+          args = {
+            '${port}',
+          },
+        },
+      }
+      dap.configurations.javascript = {
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Launch file',
+          program = '${file}',
+          cwd = '${workspaceFolder}',
+        },
+        --   {
+        --     type = 'pwa-node',
+        --     request = 'launch',
+        --     name = 'Launch mocha test',
+        --     program = '${workspaceFolder}',
+        --     runtimeExecutable = 'node',
+        --     runtimeArgs = {
+        --       './node_modules/mocha/bin/mocha',
+        --     },
+        --     cwd = '${workspaceFolder}',
+        --   },
+      }
       -- dap.configurations.typescript = {
       --   {
       --     type = 'pwa-node',
@@ -199,8 +194,6 @@ return {
       --     cwd = '${workspaceFolder}',
       --   },
       -- }
-    elseif filetype == 'go' then
-      require('dap-go').setup()
     end
   end,
 }
