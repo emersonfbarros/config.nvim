@@ -87,7 +87,7 @@ return {
         require('neotest').summary.close()
         require('neotest').output_panel.close()
 
-        if vim.api.nvim_get_option_value('filetype', {}) == 'go' then
+        if vim.bo.filetype == 'go' then
           require('dap-go').debug_test()
         else
           require('neotest').run.run { suite = false, strategy = 'dap' }
