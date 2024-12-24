@@ -36,12 +36,14 @@ vim.wo.signcolumn = 'yes'
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 vim.opt.list = true
-vim.opt.listchars = { tab = '▏ ', trail = '·', nbsp = '␣' }
+vim.opt.listchars = { tab = '▏ ', trail = '·', nbsp = '␣', extends = '»', precedes = '«' }
 
-vim.opt.fillchars:append { diff = "╱" }
+vim.opt.fillchars:append { diff = '╱' }
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
+
+vim.g.editorconfig = true
 
 -- Decrease update time
 vim.o.timeout = true
