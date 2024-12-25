@@ -1,5 +1,6 @@
 return {
   'otavioschwanck/arrow.nvim',
+  cmd = 'Arrow',
   keys = {
     '<leader>;',
     mode = { 'n', 'v' },
@@ -9,7 +10,7 @@ return {
   opts = {
     show_icons = true,
     leader_key = '<leader>;',
-    buffer_leader_key = 'm', -- Per Buffer Mappings
+    buffer_leader_key = '<leader>m', -- Per Buffer Mappings
     separate_by_branch = true,
   },
 }
