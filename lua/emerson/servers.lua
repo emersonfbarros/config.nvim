@@ -318,4 +318,6 @@ return {
   bashls = {},
   jsonls = {},
   marksman = {},
+  eslint = {},
+  biome = {},
 }
