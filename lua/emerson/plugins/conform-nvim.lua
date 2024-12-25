@@ -18,10 +18,10 @@ return {
   opts = {
     formatters_by_ft = {
       go = { 'goimports-reviser', 'gofumpt', 'golines' },
-      javascript = { 'biome' },
-      typescript = { 'biome' },
-      javascriptreact = { 'biome' },
-      typescriptreact = { 'biome' },
+      javascript = { 'biome-check' },
+      typescript = { 'biome-check' },
+      javascriptreact = { 'biome-check' },
+      typescriptreact = { 'biome-check' },
       css = { 'prettier' },
       html = { 'prettier' },
       json = { 'jq' },
