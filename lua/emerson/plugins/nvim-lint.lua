@@ -7,6 +7,7 @@ return {
     lint.linters_by_ft = {
       go = { 'golangcilint' },
       proto = { 'buf_lint' },
+      markdown = { 'markdownlint-cli2' },
     }
 
     local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
