@@ -316,8 +316,10 @@ return {
   dockerls = {},
   docker_compose_language_service = {},
   bashls = {},
-  jsonls = {},
   marksman = {},
+  jsonls = {},
+  html = {},
+  cssls = {},
   eslint = {},
   biome = {},
 }
