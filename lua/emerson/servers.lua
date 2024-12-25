@@ -141,32 +141,177 @@ return {
       },
     },
   },
-  ts_ls = {
-    settings = {
-      disable_formatting = true,
-      javascript = {
-        inlayHints = {
-          includeInlayEnumMemberValueHints = true,
-          includeInlayFunctionLikeReturnTypeHints = true,
-          includeInlayFunctionParameterTypeHints = true,
-          includeInlayParameterNameHints = 'all', -- 'none' | 'literals' | 'all';
-          includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-          includeInlayPropertyDeclarationTypeHints = true,
-          includeInlayVariableTypeHints = true,
+  vtsls = {
+    settings = (function()
+      local lang_opts = {
+        updateImportsOnFileMove = { enabled = 'always' },
+        suggest = {
+          completeFunctionCalls = true,
         },
-      },
-      typescript = {
-        inlayHints = {
-          includeInlayEnumMemberValueHints = true,
-          includeInlayFunctionLikeReturnTypeHints = true,
-          includeInlayFunctionParameterTypeHints = true,
-          includeInlayParameterNameHints = 'all', -- 'none' | 'literals' | 'all';
-          includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-          includeInlayPropertyDeclarationTypeHints = true,
-          includeInlayVariableTypeHints = true,
+        preferences = {
+          quoteStyle = 'auto',
+          importModuleSpecifierEnding = 'minimal',
+          importModuleSpecifier = 'shortest',
         },
-      },
-    },
+        inlayHints = {
+          enumMemberValues = { enabled = true },
+          functionLikeReturnTypes = { enabled = true },
+          parameterNames = { enabled = 'literals' },
+          parameterTypes = { enabled = true },
+          propertyDeclarationTypes = { enabled = true },
+          variableTypes = { enabled = false },
+        },
+      }
+
+      return {
+        typescript = lang_opts,
+        javascript = lang_opts,
+        complete_function_calls = true,
+        vtsls = {
+          enableMoveToFileCodeAction = true,
+          autoUseWorkspaceTsdk = true,
+          experimental = {
+            maxInlayHintLength = 30,
+            completion = {
+              enableServerSideFuzzyMatch = true,
+            },
+          },
+        },
+      }
+    end)(),
+    on_attach = function(client, bufnr) -- adapted from LazyVim config
+      client.commands['_typescript.moveToFileRefactoring'] = function(command, _)
+        ---@type string, string, lsp.Range
+        local action, uri, range = unpack(command.arguments)
+
+        local function move(newf)
+          client.request('workspace/executeCommand', {
+            command = command.command,
+            arguments = { action, uri, range, newf },
+          })
+        end
+
+        local fname = vim.uri_to_fname(uri)
+        client.request('workspace/executeCommand', {
+          command = 'typescript.tsserverRequest',
+          arguments = {
+            'getMoveToRefactoringFileSuggestions',
+            {
+              file = fname,
+              startLine = range.start.line + 1,
+              startOffset = range.start.character + 1,
+              endLine = range['end'].line + 1,
+              endOffset = range['end'].character + 1,
+            },
+          },
+        }, function(_, result)
+          ---@type string[]
+          local files = result.body.files
+          table.insert(files, 1, 'Enter new path...')
+          vim.ui.select(files, {
+            prompt = 'Select move destination:',
+            format_item = function(f)
+              return vim.fn.fnamemodify(f, ':~:.')
+            end,
+          }, function(f)
+            if f and f:find '^Enter new path' then
+              vim.ui.input({
+                prompt = 'Enter move destination:',
+                default = vim.fn.fnamemodify(fname, ':h') .. '/',
+                completion = 'file',
+              }, function(newf)
+                return newf and move(newf)
+              end)
+            elseif f then
+              move(f)
+            end
+          end)
+        end)
+      end
+
+      ---@class LspCommand: lsp.ExecuteCommandParams
+      ---@field open? boolean
+      ---@field handler? lsp.Handler
+
+      ---@param opts LspCommand
+      local function lsp_exec(opts)
+        local params = {
+          command = opts.command,
+          arguments = opts.arguments,
+        }
+        if opts.open then
+          require('trouble').open {
+            mode = 'lsp_command',
+            params = params,
+          }
+        else
+          return vim.lsp.buf_request(0, 'workspace/executeCommand', params, opts.handler)
+        end
+      end
+
+      local lsp_action = setmetatable({}, {
+        __index = function(_, action)
+          return function()
+            vim.lsp.buf.code_action {
+              apply = true,
+              context = {
+                only = { action },
+                diagnostics = {},
+              },
+            }
+          end
+        end,
+      })
+
+      vim.keymap.set('n', 'gS', function()
+        local params = vim.lsp.util.make_position_params()
+        lsp_exec {
+          command = 'typescript.goToSourceDefinition',
+          arguments = { params.textDocument.uri, params.position },
+          open = true,
+        }
+      end, { buffer = bufnr, desc = '[G]oto [S]ource Definition' })
+
+      vim.keymap.set('n', 'gR', function()
+        lsp_exec {
+          command = 'typescript.findAllFileReferences',
+          arguments = { vim.uri_from_bufnr(0) },
+          open = true,
+        }
+      end, { buffer = bufnr, desc = 'File References' })
+
+      vim.keymap.set(
+        'n',
+        '<leader>co',
+        lsp_action['source.organizeImports'],
+        { buffer = bufnr, desc = 'Organize Imports' }
+      )
+
+      vim.keymap.set(
+        'n',
+        '<leader>cM',
+        lsp_action['source.addMissingImports.ts'],
+        { buffer = bufnr, desc = 'Add missing imports' }
+      )
+
+      vim.keymap.set(
+        'n',
+        '<leader>cu',
+        lsp_action['source.removeUnused.ts'],
+        { buffer = bufnr, desc = 'Remove unused imports' }
+      )
+
+      vim.keymap.set(
+        'n',
+        '<leader>cD',
+        lsp_action['source.fixAll.ts'],
+        { buffer = bufnr, desc = 'Fix all diagnostics' }
+      )
+
+      vim.keymap.set('n', '<leader>cV', function()
+        lsp_exec { command = 'typescript.selectTypeScriptVersion' }
+      end, { buffer = bufnr, desc = 'Select TS workspace version' })
+    end,
   },
   dockerls = {},
   docker_compose_language_service = {},
