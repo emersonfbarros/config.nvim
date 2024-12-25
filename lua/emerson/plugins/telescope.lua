@@ -73,7 +73,11 @@ return {
         },
         mappings = {
           i = { ['<c-t>'] = open_with_trouble },
-          n = { ['<c-t>'] = open_with_trouble },
+          n = {
+            ['<c-t>'] = open_with_trouble,
+            -- deletes buffers with d in normal mode buffers picker
+            ['d'] = require('telescope.actions').delete_buffer,
+          },
         },
       },
       pickers = { -- squaring stuff
@@ -96,7 +100,7 @@ return {
     -- Some stuff
     {
       '<leader><leader>',
-      '<cmd>Telescope buffers<CR>',
+      '<cmd>Telescope buffers sort_mru=true sort_lastused=true<CR>',
       desc = '[ ] Find existing buffers',
     },
     {
