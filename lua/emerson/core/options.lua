@@ -1,6 +1,10 @@
 -- Set highlight on search
 vim.o.hlsearch = false
 
+-- Undercurl
+vim.cmd([[let &t_Cs = "\e[4:3m"]])
+vim.cmd([[let &t_Ce = "\e[4:0m"]])
+
 -- Make line numbers default
 vim.wo.number = true
 
