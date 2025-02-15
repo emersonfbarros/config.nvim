@@ -24,7 +24,6 @@ return {
           functionTypeParameters = true,
         },
         analyses = {
-          fieldalignment = true,
           nilness = true,
           unusedparams = true,
           unusedwrite = true,
@@ -313,6 +312,9 @@ return {
       end, { buffer = bufnr, desc = 'Select TS workspace version' })
     end,
   },
+  golangci_lint_ls = {},
+  buf_ls = {},
+  statix = {},
   dockerls = {},
   docker_compose_language_service = {},
   bashls = {},
