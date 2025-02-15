@@ -7,9 +7,7 @@ return {
       mode = { 'n', 'v' },
       function()
         require('conform').format {
-          lsp_format = 'fallback',
-          async = false,
-          timeout_ms = 1000,
+          lsp_format = 'first',
         }
       end,
       desc = '[C]ode [P]retty',
@@ -17,7 +15,7 @@ return {
   },
   opts = {
     formatters_by_ft = {
-      go = { 'goimports-reviser', 'gofumpt', 'golines' },
+      go = { 'gofumpt', 'golines', 'goimports-reviser' },
       javascript = { 'biome-check' },
       typescript = { 'biome-check' },
       javascriptreact = { 'biome-check' },
