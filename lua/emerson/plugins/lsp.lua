@@ -15,7 +15,7 @@ return {
         },
         lazy = true,
       },
-      { 'https://git.sr.ht/~whynothugo/lsp_lines.nvim', opts = {}, lazy = true },
+      -- { 'https://git.sr.ht/~whynothugo/lsp_lines.nvim', opts = {}, lazy = true },
     },
     config = function()
       vim.api.nvim_create_autocmd('LspAttach', {
