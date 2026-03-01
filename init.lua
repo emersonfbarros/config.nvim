@@ -1,2 +1,1 @@
-require 'emerson.core'
-require 'emerson.lazy'
+require 'config'

@@ -1,5 +1,9 @@
-local set = vim.opt_local
+local opt = vim.opt_local
 
-set.expandtab = false
-set.tabstop = 4
-set.shiftwidth = 4
+-- Go uses tabs by convention
+opt.expandtab = false
+opt.tabstop = 4
+opt.shiftwidth = 4
+
+-- Load custom Go functionality
+require('config.ft.go').setup(vim.api.nvim_get_current_buf())

@@ -1,0 +1,7 @@
+# Emerson's config
+
+Hey, this is my neovim config.
+
+Probably don't work for your computer! But, you can read it if you'd like :)
+
+Bye!
